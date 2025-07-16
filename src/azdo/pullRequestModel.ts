@@ -276,7 +276,14 @@ export class PullRequestModel implements IPullRequestModel {
 
 	async createThread(
 		message?: string,
-		threadContext?: { filePath: string; line: number; startOffset: number; endOffset: number; isLeft: boolean },
+		threadContext?: {
+			filePath: string;
+			line: number;
+			startOffset: number;
+			endLine?: number;
+			endOffset: number;
+			isLeft: boolean;
+		},
 		prCommentThreadContext?: GitPullRequestCommentThreadContext,
 	): Promise<GitPullRequestCommentThread | undefined> {
 		const azdoRepo = await this.azdoRepository.ensure();
@@ -290,13 +297,19 @@ export class PullRequestModel implements IPullRequestModel {
 			tc = {
 				filePath: threadContext?.filePath,
 				leftFileStart: { line: threadContext?.line, offset: threadContext?.startOffset },
-				leftFileEnd: { line: threadContext?.line, offset: threadContext?.endOffset },
+				leftFileEnd: {
+					line: threadContext?.endLine ?? threadContext?.line,
+					offset: threadContext?.endOffset,
+				},
 			};
 		} else {
 			tc = {
 				filePath: threadContext?.filePath,
 				rightFileStart: { line: threadContext?.line, offset: threadContext?.startOffset },
-				rightFileEnd: { line: threadContext?.line, offset: threadContext?.endOffset },
+				rightFileEnd: {
+					line: threadContext?.endLine ?? threadContext?.line,
+					offset: threadContext?.endOffset,
+				},
 			};
 		}
 
@@ -939,7 +952,11 @@ export class PullRequestModel implements IPullRequestModel {
 	public async createPatch(repository: Repository, fileChange: InMemFileChange | SlimFileChange): Promise<string> {
 		let patch = '';
 		try {
-			patch = await repository.diffBetween(fileChange.baseCommit, fileChange.headCommit, removeLeadingSlash(fileChange.fileName));
+			patch = await repository.diffBetween(
+				fileChange.baseCommit,
+				fileChange.headCommit,
+				removeLeadingSlash(fileChange.fileName),
+			);
 		} catch (error) {
 			Logger.appendLine(`Error creating patch using git: ${error}`, PullRequestModel.ID);
 			let leftFile = fileChange.previousFileSHA;
@@ -954,7 +971,12 @@ export class PullRequestModel implements IPullRequestModel {
 			const rightFileContentPromise = !rightFile ? '' : this.getFile(rightFile);
 
 			const [leftFileContent, rightFileContent] = await Promise.all([leftFileContentPromise, rightFileContentPromise]);
-			patch = diff.createTwoFilesPatch(fileChange.fileName, fileChange.previousFileName, leftFileContent, rightFileContent);
+			patch = diff.createTwoFilesPatch(
+				fileChange.fileName,
+				fileChange.previousFileName,
+				leftFileContent,
+				rightFileContent,
+			);
 		}
 		return patch;
 	}

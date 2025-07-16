@@ -11,11 +11,7 @@ import { GHPRComment, GHPRCommentThread, TemporaryComment } from '../azdo/prComm
 import { PullRequestModel } from '../azdo/pullRequestModel';
 import { getCommentThreadStatusKeys, updateCommentThreadLabel } from '../azdo/utils';
 import { URI_SCHEME_PR, URI_SCHEME_REVIEW } from '../constants';
-import {
-	GitFileChangeNode,
-	InMemFileChangeNode,
-	RemoteFileChangeNode,
-} from '../view/treeNodes/fileChangeNode';
+import { GitFileChangeNode, InMemFileChangeNode, RemoteFileChangeNode } from '../view/treeNodes/fileChangeNode';
 import { getCommentingRanges } from './commentingRanges';
 import Logger from './logger';
 import { fromPRUri, fromReviewUri } from './uri';
@@ -83,11 +79,13 @@ export class CommonCommentHandler {
 	public async editComment(
 		thread: GHPRCommentThread,
 		comment: GHPRComment,
-		getFileChanges: (isOutdated: boolean) => Promise<(IFileChangeNodeWithUri)[]>,
+		getFileChanges: (isOutdated: boolean) => Promise<IFileChangeNodeWithUri[]>,
 	): Promise<Comment | undefined> {
 		const temporaryCommentId = this.optimisticallyEditComment(thread, comment);
 		try {
-			const fileChange = await this.findMatchingFileNode(thread.uri, getFileChanges) as (InMemFileChangeNode | GitFileChangeNode);
+			const fileChange = (await this.findMatchingFileNode(thread.uri, getFileChanges)) as
+				| InMemFileChangeNode
+				| GitFileChangeNode;
 			const rawComment = await this.pullRequestModel.editThread(
 				comment.body instanceof vscode.MarkdownString ? comment.body.value : comment.body,
 				thread.threadId,
@@ -195,7 +193,7 @@ export class CommonCommentHandler {
 
 	private async findMatchingFileNode(
 		uri: vscode.Uri,
-		getFileChanges: (isOutdated: boolean) => Promise<(IFileChangeNodeWithUri)[]>,
+		getFileChanges: (isOutdated: boolean) => Promise<IFileChangeNodeWithUri[]>,
 	): Promise<IFileChangeNodeWithUri> {
 		let fileName: string;
 		let isOutdated = false;
@@ -239,8 +237,9 @@ export class CommonCommentHandler {
 		const rawComment = await this.pullRequestModel.createThread(input, {
 			filePath: fileChange.fileName,
 			line: thread.range.start.line + 1,
-			endOffset: 1,
-			startOffset: 1,
+			endLine: thread.range.end.line + 1,
+			endOffset: thread.range.end.character + 1,
+			startOffset: thread.range.start.character + 1,
 			isLeft: isLeft,
 		});
 
