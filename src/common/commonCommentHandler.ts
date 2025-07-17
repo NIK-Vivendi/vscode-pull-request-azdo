@@ -237,9 +237,9 @@ export class CommonCommentHandler {
 		const rawComment = await this.pullRequestModel.createThread(input, {
 			filePath: fileChange.fileName,
 			line: thread.range.start.line + 1,
+			startOffset: thread.range.start.character + 1,
 			endLine: thread.range.end.line + 1,
 			endOffset: thread.range.end.character + 1,
-			startOffset: thread.range.start.character + 1,
 			isLeft: isLeft,
 		});
 

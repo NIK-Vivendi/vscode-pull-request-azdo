@@ -536,18 +536,13 @@ export class ReviewCommentController
 			const side = this.getCommentSide(thread);
 			// If the thread is on the workspace file, make sure the position
 			// is properly adjusted to account for any local changes.
-			let line: number;
-
 			if (side === DiffSide.RIGHT) {
 				const diff = await this.getContentDiff(thread.uri, fileName);
-				line = mapNewPositionToOld(diff, thread.range.start.line);
-			} else {
-				line = thread.range.start.line;
+				thread.range = new vscode.Range(
+					new vscode.Position(mapNewPositionToOld(diff, thread.range.start.line), thread.range.start.character),
+					new vscode.Position(mapNewPositionToOld(diff, thread.range.end.line), thread.range.end.character),
+				);
 			}
-			thread.range = new vscode.Range(
-				new vscode.Position(getZeroBased(line), 0),
-				new vscode.Position(getZeroBased(line), 0),
-			);
 		}
 
 		await this._commonCommentHandler.createOrReplyComment(
