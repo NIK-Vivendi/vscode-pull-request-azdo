@@ -178,7 +178,7 @@ export class FileChangeNode extends TreeNode implements vscode.TreeItem {
 			reviewThreadsForNode.length > 0,
 		);
 		/* Some comments are attached to the file and have not reference/selection in the content. Need to be removed here. */
-		reviewThreadsForNode = reviewThreadsForNode.filter((thread) => thread.line !== undefined);
+		reviewThreadsForNode = reviewThreadsForNode.filter(thread => thread.line !== undefined);
 
 		if (reviewThreadsForNode.length) {
 			reviewThreadsForNode.sort((a, b) => a.line - b.line);
@@ -208,14 +208,19 @@ export class FileChangeNode extends TreeNode implements vscode.TreeItem {
 			}
 		}
 
-		const pathSegments = filePath.path.split('/');
-		vscode.commands.executeCommand(
-			'vscode.diff',
-			parentURI,
-			headURI,
-			`${pathSegments[pathSegments.length - 1]} (Pull Request)`,
-			opts,
-		);
+		if (this.status === GitChangeType.ADD) {
+			// When the file is new there is no need for a diff view
+			return vscode.commands.executeCommand('azdoreview.openFile', headURI);
+		} else {
+			const pathSegments = filePath.path.split('/');
+			vscode.commands.executeCommand(
+				'vscode.diff',
+				parentURI,
+				headURI,
+				`${pathSegments[pathSegments.length - 1]} (Pull Request)`,
+				opts,
+			);
+		}
 	}
 }
 
@@ -239,7 +244,19 @@ export class InMemFileChangeNode extends FileChangeNode implements vscode.TreeIt
 		public readonly sha?: string,
 		public readonly previousFileSha?: string | undefined,
 	) {
-		super(parent, pullRequest, status, fileName, blobUrl, filePath, parentFilePath, diffHunks, comments, sha, previousFileSha);
+		super(
+			parent,
+			pullRequest,
+			status,
+			fileName,
+			blobUrl,
+			filePath,
+			parentFilePath,
+			diffHunks,
+			comments,
+			sha,
+			previousFileSha,
+		);
 		this.command = {
 			title: 'show diff',
 			command: 'azdopr.openDiffView',
@@ -267,7 +284,19 @@ export class GitFileChangeNode extends FileChangeNode implements vscode.TreeItem
 		public readonly commitId?: string,
 		public readonly previousFileSha?: string | undefined,
 	) {
-		super(parent, pullRequest, status, fileName, blobUrl, filePath, parentFilePath, diffHunks, comments, sha, previousFileSha);
+		super(
+			parent,
+			pullRequest,
+			status,
+			fileName,
+			blobUrl,
+			filePath,
+			parentFilePath,
+			diffHunks,
+			comments,
+			sha,
+			previousFileSha,
+		);
 		this.command = {
 			title: 'open changed file',
 			command: 'azdopr.openChangedFile',
