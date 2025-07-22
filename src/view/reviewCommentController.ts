@@ -543,6 +543,11 @@ export class ReviewCommentController
 					new vscode.Position(mapNewPositionToOld(diff, thread.range.end.line), thread.range.end.character),
 				);
 			}
+
+			thread.range = new vscode.Range(
+				new vscode.Position(getZeroBased(thread.range.start.line), thread.range.start.character),
+				new vscode.Position(getZeroBased(thread.range.end.line), thread.range.end.character),
+			);
 		}
 
 		await this._commonCommentHandler.createOrReplyComment(
