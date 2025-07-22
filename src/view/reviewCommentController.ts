@@ -383,6 +383,8 @@ export class ReviewCommentController
 		document: vscode.TextDocument,
 		token: vscode.CancellationToken,
 	): Promise<vscode.Range[] | undefined> {
+		return [new vscode.Range(0, 0, document.lineCount - 1, 0)];
+
 		let query: ReviewUriParams | undefined;
 
 		try {
@@ -543,11 +545,6 @@ export class ReviewCommentController
 					new vscode.Position(mapNewPositionToOld(diff, thread.range.end.line), thread.range.end.character),
 				);
 			}
-
-			thread.range = new vscode.Range(
-				new vscode.Position(getZeroBased(thread.range.start.line), thread.range.start.character),
-				new vscode.Position(getZeroBased(thread.range.end.line), thread.range.end.character),
-			);
 		}
 
 		await this._commonCommentHandler.createOrReplyComment(
@@ -611,7 +608,6 @@ export class ReviewCommentController
 	// 		}
 
 	// 		this.update(this._localFileChanges, this._obsoleteFileChanges);
-
 	// 	} catch (e) {
 	// 		throw new Error(formatError(e));
 	// 	}
