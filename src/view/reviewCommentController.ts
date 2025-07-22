@@ -567,6 +567,10 @@ export class ReviewCommentController
 		}
 	}
 
+	async deleteComment(thread: GHPRCommentThread, comment: GHPRComment | TemporaryComment): Promise<void> {
+		await this._commonCommentHandler.deleteComment(thread, comment, async _ => this._localFileChanges);
+	}
+
 	// async deleteComment(thread: GHPRCommentThread, comment: GHPRComment | TemporaryComment): Promise<void> {
 	// 	try {
 	// 		if (!this._reposManager.activePullRequest) {

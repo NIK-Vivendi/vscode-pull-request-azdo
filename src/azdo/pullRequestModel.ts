@@ -539,6 +539,22 @@ export class PullRequestModel implements IPullRequestModel {
 		return result;
 	}
 
+	async deleteComment(threadId: number, commentId: number): Promise<void> {
+		const azdoRepo = await this.azdoRepository.ensure();
+		const repoId = (await azdoRepo.getRepositoryId()) || '';
+		const azdo = azdoRepo.azdo;
+		const git = await azdo?.connection.getGitApi();
+
+		await git!.deleteComment(repoId, this.getPullRequestId(), threadId, commentId);
+
+		const threadWithComment = this._reviewThreadsCache.find(thread => thread.id === threadId);
+
+		if (threadWithComment) {
+			threadWithComment.thread.comments = threadWithComment.thread.comments.filter(c => c.id !== commentId);
+			this._onDidChangeReviewThreads.fire({ added: [], changed: [threadWithComment], removed: [] });
+		}
+	}
+
 	getCommentPermission(comment: Comment): CommentPermissions {
 		const user = this.azdoRepository.azdo?.authenticatedUser;
 		const isSameUser = comment.author?.id === user?.id;

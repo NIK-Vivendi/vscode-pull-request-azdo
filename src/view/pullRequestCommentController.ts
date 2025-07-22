@@ -36,7 +36,7 @@ export class PullRequestCommentController implements CommentHandler, CommentReac
 		private pullRequestModel: PullRequestModel,
 		private _folderReposManager: FolderRepositoryManager,
 		private _commentController: vscode.CommentController,
-		private getFileChanges: () => Promise<(IFileChangeNodeWithUri)[]>,
+		private getFileChanges: () => Promise<IFileChangeNodeWithUri[]>,
 	) {
 		this._commentHandlerId = uuid();
 		this._commonCommentHandler = new CommonCommentHandler(pullRequestModel, _folderReposManager);
@@ -322,6 +322,10 @@ export class PullRequestCommentController implements CommentHandler, CommentReac
 				comment.body instanceof vscode.MarkdownString ? comment.body.value : comment.body,
 			);
 		}
+	}
+
+	public async deleteComment(thread: GHPRCommentThread, comment: GHPRComment | TemporaryComment): Promise<void> {
+		await this._commonCommentHandler.deleteComment(thread, comment, async _ => await this.getFileChanges());
 	}
 
 	// #endregion

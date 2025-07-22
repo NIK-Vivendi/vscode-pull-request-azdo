@@ -652,22 +652,24 @@ export function registerCommands(
 		}),
 	);
 
-	// context.subscriptions.push(vscode.commands.registerCommand('azdopr.deleteComment', async (comment: GHPRComment | TemporaryComment) => {
-	// 	/* __GDPR__
-	// 		"azdopr.deleteComment" : {}
-	// 	*/
-	// 	telemetry.sendTelemetryEvent('azdopr.deleteComment');
+	context.subscriptions.push(
+		vscode.commands.registerCommand('azdopr.deleteComment', async (comment: GHPRComment | TemporaryComment) => {
+			/* __GDPR__
+			"azdopr.deleteComment" : {}
+		*/
+			telemetry.sendTelemetryEvent('azdopr.deleteComment');
 
-	// 	const shouldDelete = await vscode.window.showWarningMessage('Delete comment?', { modal: true }, 'Delete');
+			const shouldDelete = await vscode.window.showWarningMessage('Delete comment?', { modal: true }, 'Delete');
 
-	// 	if (shouldDelete === 'Delete') {
-	// 		const handler = resolveCommentHandler(comment.parent);
+			if (shouldDelete === 'Delete') {
+				const handler = resolveCommentHandler(comment.parent);
 
-	// 		if (handler) {
-	// 			await handler.deleteComment(comment.parent, comment);
-	// 		}
-	// 	}
-	// }));
+				if (handler) {
+					await handler.deleteComment(comment.parent, comment);
+				}
+			}
+		}),
+	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('azdoreview.openFile', (value: GitFileChangeNode | vscode.Uri) => {
@@ -761,16 +763,18 @@ export function registerCommands(
 			telemetry.sendTelemetryEvent('azdopr.applySuggestionWithCopilot');
 
 			commentThread.collapsibleState = vscode.CommentThreadCollapsibleState.Collapsed;
-			const messages = commentThread.comments.map(comment => {
-				const body = comment.body instanceof vscode.MarkdownString ? comment.body.value : comment.body;
-				return `- ${comment.author.name}: ${body}`;
-			}).join('\n');
+			const messages = commentThread.comments
+				.map(comment => {
+					const body = comment.body instanceof vscode.MarkdownString ? comment.body.value : comment.body;
+					return `- ${comment.author.name}: ${body}`;
+				})
+				.join('\n');
 
 			await vscode.commands.executeCommand('vscode.editorChat.start', {
 				initialRange: commentThread.range,
 				message: messages,
 				autoSend: true,
 			});
-		})
+		}),
 	);
 }

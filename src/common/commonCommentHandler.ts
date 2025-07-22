@@ -159,6 +159,46 @@ export class CommonCommentHandler {
 		}
 	}
 
+	public async deleteComment(
+		thread: GHPRCommentThread,
+		comment: GHPRComment | TemporaryComment,
+		getFileChanges: (isOutdated: boolean) => Promise<IFileChangeNodeWithUri[]>,
+	): Promise<void> {
+		if (comment instanceof GHPRComment) {
+			try {
+				await this.pullRequestModel.deleteComment(thread.threadId, parseInt(comment.commentId));
+
+				const fileChange = (await this.findMatchingFileNode(thread.uri, getFileChanges)) as
+					| InMemFileChangeNode
+					| GitFileChangeNode;
+
+				const index = fileChange.comments.findIndex(c => c.id?.toString() === comment.commentId);
+				if (index > -1) {
+					fileChange.comments.splice(index, 1);
+				}
+
+				thread.comments = thread.comments.filter(c => !(c instanceof GHPRComment) || c.commentId !== comment.commentId);
+
+				if (thread.comments.length === 0) {
+					thread.dispose();
+				} else {
+					updateCommentThreadLabel(thread);
+				}
+			} catch (e) {
+				vscode.window.showErrorMessage(`Deleting comment failed: ${e}`);
+			}
+		} else {
+			// Handle temporary comments
+			thread.comments = thread.comments.filter(c => !(c instanceof TemporaryComment) || c.id !== comment.id);
+
+			if (thread.comments.length === 0) {
+				thread.dispose();
+			} else {
+				updateCommentThreadLabel(thread);
+			}
+		}
+	}
+
 	private optimisticallyAddComment(thread: GHPRCommentThread, input: string, inDraft: boolean): number {
 		const currentUser = this._folderReposManager.getCurrentUser();
 		const comment = new TemporaryComment(thread, input, inDraft, currentUser);
