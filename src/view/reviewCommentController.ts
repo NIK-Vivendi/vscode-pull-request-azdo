@@ -383,8 +383,6 @@ export class ReviewCommentController
 		document: vscode.TextDocument,
 		token: vscode.CancellationToken,
 	): Promise<vscode.Range[] | undefined> {
-		return [new vscode.Range(0, 0, document.lineCount - 1, 0)];
-
 		let query: ReviewUriParams | undefined;
 
 		try {
@@ -395,7 +393,8 @@ export class ReviewCommentController
 			const matchedFile = this.findMatchedFileChangeForReviewDiffView(this._localFileChanges, document.uri);
 
 			if (matchedFile) {
-				return getCommentingRanges(matchedFile.diffHunks, query.base);
+				return [new vscode.Range(0, 0, document.lineCount - 1, 0)];
+				// return getCommentingRanges(matchedFile.diffHunks, query.base);
 			}
 		}
 
@@ -416,6 +415,7 @@ export class ReviewCommentController
 			const ranges = [];
 
 			if (matchedFile) {
+				return [new vscode.Range(0, 0, document.lineCount - 1, 0)];
 				// TODO Why was this here?
 				// if (matchedFile.status === GitChangeType.RENAME) {
 				// 	return [];
