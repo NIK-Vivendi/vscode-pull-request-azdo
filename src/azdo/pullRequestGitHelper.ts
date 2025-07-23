@@ -7,10 +7,12 @@
  * Inspired by and includes code from GitHub/VisualStudio project, obtained from https://github.com/github/VisualStudio/blob/165a97bdcab7559e0c4393a571b9ff2aed4ba8a7/src/GitHub.App/Services/PullRequestService.cs
  */
 
+import * as vscode from 'vscode';
 import { Branch, Repository } from '../api/api';
 import Logger from '../common/logger';
 import { Protocol } from '../common/protocol';
 import { parseRepositoryRemotes, Remote } from '../common/remote';
+import { SETTINGS_NAMESPACE } from '../constants';
 import { IResolvedPullRequestModel, PullRequestModel } from './pullRequestModel';
 
 const PullRequestRemoteMetadataKey = 'github-pr-remote';
@@ -18,6 +20,7 @@ export const PullRequestMetadataKey = 'github-pr-owner-number';
 // TODO What will be regex for azdo?
 const PullRequestBranchRegex = /branch\.(.+)\.github-pr-owner-number/;
 const PullRequestRemoteRegex = /branch\.(.+)\.remote/;
+const UNSHALLOW_PULL_REQUEST_ON_CHECKOUT_SETTING = 'unshallowPullRequestOnCheckout';
 
 export interface PullRequestMetadata {
 	owner: string;
@@ -108,6 +111,15 @@ export class PullRequestGitHelper {
 	 * will fail, so fall back to a normal pull.
 	 */
 	static async unshallow(repository: Repository): Promise<void> {
+		const unshallow = vscode.workspace
+			.getConfiguration(SETTINGS_NAMESPACE)
+			.get<boolean>(UNSHALLOW_PULL_REQUEST_ON_CHECKOUT_SETTING);
+
+		if (!unshallow) {
+			await repository.pull();
+			return;
+		}
+
 		try {
 			await repository.pull(true);
 		} catch (e) {
