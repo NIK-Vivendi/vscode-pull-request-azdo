@@ -23,18 +23,21 @@ class Log {
 	}
 
 	public appendLine(message: string, component?: string) {
+		if (this._logLevel === LogLevel.Off) {
+			return;
+		}
+
+		const timeStamp = this._logLevel === LogLevel.Debug ? `${new Date().getTime() / 1000}s` : '';
+
+		const info = component ? `${component}> ${message}` : `${message}`;
+
 		switch (this._logLevel) {
-			case LogLevel.Off:
-				return;
 			case LogLevel.Debug:
-				const hrtime = new Date().getTime() / 1000;
-				const timeStamp = `${hrtime}s`;
-				const info = component ? `${component}> ${message}` : `${message}`;
 				this._outputChannel.appendLine(`[Debug ${timeStamp}] ${info}`);
 				return;
 			case LogLevel.Info:
 			default:
-				this._outputChannel.appendLine(`[Info] ` + (component ? `${component}> ${message}` : `${message}`));
+				this._outputChannel.appendLine(`[Info ${timeStamp}] ${info}`);
 				return;
 		}
 	}
