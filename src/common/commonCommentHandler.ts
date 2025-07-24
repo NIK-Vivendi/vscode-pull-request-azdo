@@ -276,6 +276,7 @@ export class CommonCommentHandler {
 	): Promise<GitPullRequestCommentThread | undefined> {
 		const rawComment = await this.pullRequestModel.createThread(input, {
 			filePath: fileChange.fileName,
+			fileUri: thread.uri,
 			line: thread.range.start.line + 1,
 			startOffset: thread.range.start.character + 1,
 			endLine: thread.range.end.line + 1,

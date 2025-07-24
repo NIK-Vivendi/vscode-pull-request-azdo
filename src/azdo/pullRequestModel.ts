@@ -278,9 +278,10 @@ export class PullRequestModel implements IPullRequestModel {
 		message?: string,
 		threadContext?: {
 			filePath: string;
+			fileUri: vscode.Uri;
 			line: number;
 			startOffset: number;
-			endLine?: number;
+			endLine: number;
 			endOffset: number;
 			isLeft: boolean;
 		},
@@ -293,13 +294,25 @@ export class PullRequestModel implements IPullRequestModel {
 
 		let tc: CommentThreadContext = undefined;
 
+		// When there is nothing selected use the whole line as context like in the web ui
+		if (
+			threadContext != null &&
+			threadContext.startOffset === threadContext.endOffset &&
+			threadContext.endLine === threadContext.line
+		) {
+			threadContext.startOffset = 0;
+			const document = await vscode.workspace.openTextDocument(threadContext.fileUri);
+			threadContext.endOffset = document.lineAt(threadContext.line - 1).range.end.character; // whole line
+			threadContext.endLine = threadContext.line;
+		}
+
 		if (threadContext?.isLeft) {
 			tc = {
-				filePath: threadContext?.filePath,
-				leftFileStart: { line: threadContext?.line, offset: threadContext?.startOffset },
+				filePath: threadContext.filePath,
+				leftFileStart: { line: threadContext.line, offset: threadContext.startOffset },
 				leftFileEnd: {
-					line: threadContext?.endLine ?? threadContext?.line,
-					offset: threadContext?.endOffset,
+					line: threadContext.endLine,
+					offset: threadContext.endOffset,
 				},
 			};
 		} else {
