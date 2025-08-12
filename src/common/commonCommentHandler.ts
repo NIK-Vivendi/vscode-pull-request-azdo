@@ -12,7 +12,7 @@ import { PullRequestModel } from '../azdo/pullRequestModel';
 import { getCommentThreadStatusKeys, updateCommentThreadLabel } from '../azdo/utils';
 import { URI_SCHEME_PR, URI_SCHEME_REVIEW } from '../constants';
 import { GitFileChangeNode, InMemFileChangeNode, RemoteFileChangeNode } from '../view/treeNodes/fileChangeNode';
-import { getCommentingRanges } from './commentingRanges';
+import { getFullCommentingRanges } from './commentingRanges';
 import Logger from './logger';
 import { fromPRUri, fromReviewUri } from './uri';
 
@@ -327,7 +327,7 @@ export class CommonCommentHandler {
 				return;
 			}
 
-			const range = getCommentingRanges(fileChange.diffHunks, params.isBase);
+			const range = getFullCommentingRanges(document.lineCount, params.isBase);
 			return range;
 		}
 	}

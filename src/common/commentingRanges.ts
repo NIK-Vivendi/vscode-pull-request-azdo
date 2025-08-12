@@ -11,6 +11,16 @@ import { getZeroBased } from './diffPositionMapping';
 /**
  * For the base file, the only commentable areas are deleted lines. For the modified file,
  * comments can be added on any part of the diff hunk.
+ * @param lineCount The total number of lines in the file
+ * @param isBase Whether the commenting ranges are calculated for the base or modified file
+ */
+export function getFullCommentingRanges(lineCount: number, isBase: boolean): vscode.Range[] {
+	return [new vscode.Range(0, 0, lineCount - 1, 0)];
+}
+
+/**
+ * For the base file, the only commentable areas are deleted lines. For the modified file,
+ * comments can be added on any part of the diff hunk.
  * @param diffHunks The diff hunks of the file
  * @param isBase Whether the commenting ranges are calculated for the base or modified file
  */

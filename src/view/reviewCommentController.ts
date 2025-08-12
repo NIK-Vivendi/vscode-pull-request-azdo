@@ -20,9 +20,9 @@ import {
 } from '../azdo/utils';
 import { CommentHandler, registerCommentHandler, unregisterCommentHandler } from '../commentHandlerResolver';
 import { DiffSide, IReviewThread } from '../common/comment';
-import { getCommentingRanges } from '../common/commentingRanges';
+import { getFullCommentingRanges } from '../common/commentingRanges';
 import { CommonCommentHandler } from '../common/commonCommentHandler';
-import { getZeroBased, mapNewPositionToOld, mapOldPositionToNew } from '../common/diffPositionMapping';
+import { mapNewPositionToOld, mapOldPositionToNew } from '../common/diffPositionMapping';
 import { fromReviewUri, ReviewUriParams, toReviewUri } from '../common/uri';
 import { groupBy, uniqBy } from '../common/utils';
 import { URI_SCHEME_REVIEW } from '../constants';
@@ -393,8 +393,7 @@ export class ReviewCommentController
 			const matchedFile = this.findMatchedFileChangeForReviewDiffView(this._localFileChanges, document.uri);
 
 			if (matchedFile) {
-				return [new vscode.Range(0, 0, document.lineCount - 1, 0)];
-				// return getCommentingRanges(matchedFile.diffHunks, query.base);
+				return getFullCommentingRanges(document.lineCount, query.base);
 			}
 		}
 
@@ -415,7 +414,7 @@ export class ReviewCommentController
 			const ranges = [];
 
 			if (matchedFile) {
-				return [new vscode.Range(0, 0, document.lineCount - 1, 0)];
+				return getFullCommentingRanges(document.lineCount, query?.base ?? false);
 				// TODO Why was this here?
 				// if (matchedFile.status === GitChangeType.RENAME) {
 				// 	return [];
