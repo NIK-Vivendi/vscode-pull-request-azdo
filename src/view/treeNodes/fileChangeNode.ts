@@ -192,10 +192,10 @@ export class FileChangeNode extends TreeNode implements vscode.TreeItem {
 		return this;
 	}
 
-	async openDiff(folderManager: FolderRepositoryManager): Promise<void> {
+	async openDiff(folderManager: FolderRepositoryManager, opts?: vscode.TextDocumentShowOptions): Promise<void> {
 		const parentFilePath = this.parentFilePath;
 		const filePath = this.filePath;
-		const opts = this.opts;
+		opts = { ...this.opts, ...(opts ?? {}) };
 
 		let parentURI = (await asImageDataURI(parentFilePath, folderManager.repository)) || parentFilePath;
 		let headURI = (await asImageDataURI(filePath, folderManager.repository)) || filePath;

@@ -248,13 +248,19 @@ export class ReviewManager {
 				Logger.appendLine(`Review> no matching pull request metadata found for current branch ${branch.name}`);
 				const metadataFromGithub = await this._folderRepoManager.getMatchingPullRequestMetadataFromGitHub();
 				if (metadataFromGithub) {
-					PullRequestGitHelper.associateBranchWithPullRequest(this._repository, metadataFromGithub.model, branch.name!);
+					PullRequestGitHelper.associateBranchWithPullRequest(
+						this._repository,
+						metadataFromGithub.model,
+						branch.name!,
+					);
 					matchingPullRequestMetadata = metadataFromGithub;
 				}
 			}
 
 			if (!matchingPullRequestMetadata) {
-				Logger.appendLine(`Review> no matching pull request metadata found on GitHub for current branch ${branch.name}`);
+				Logger.appendLine(
+					`Review> no matching pull request metadata found on GitHub for current branch ${branch.name}`,
+				);
 				this.clear(true);
 				return;
 			}
@@ -309,7 +315,11 @@ export class ReviewManager {
 			await this.registerCommentController(pr);
 
 			if (!this._webviewViewProvider) {
-				this._webviewViewProvider = new PullRequestViewProvider(this._context.extensionUri, this._folderRepoManager, pr);
+				this._webviewViewProvider = new PullRequestViewProvider(
+					this._context.extensionUri,
+					this._folderRepoManager,
+					pr,
+				);
 				this._context.subscriptions.push(
 					vscode.window.registerWebviewViewProvider(PullRequestViewProvider.viewType, this._webviewViewProvider),
 				);
@@ -342,6 +352,10 @@ export class ReviewManager {
 		} finally {
 			this._validateStatusInProgress = undefined;
 		}
+	}
+
+	public hasActiveReview(): boolean {
+		return this._folderRepoManager.activePullRequest != null;
 	}
 
 	public async updateComments(): Promise<void> {
@@ -448,7 +462,7 @@ export class ReviewManager {
 				activeComments.filter(comment => comment.threadContext?.filePath === fileName),
 				change.status === GitChangeType.DELETE ? change.previousFileSHA : change.fileSHA,
 				headSha,
-				change.previousFileSHA
+				change.previousFileSHA,
 			);
 			nodes.push(changedItem);
 		}

@@ -417,6 +417,12 @@
 				"title": "Mark File As Not Viewed",
 				"category": "AzDO Pull Requests",
 				"icon": "$(eye-closed)"
+			},
+			{
+				"command": "azdopr.openAllDiffs",
+				"title": "Open All Changed Files in Diff Views",
+				"category": "AzDO Pull Requests",
+				"icon": "$(diff-multiple)"
 			}
 		],
 		"viewsWelcome": [
@@ -541,6 +547,10 @@
 					"when": "false"
 				},
 				{
+					"command": "azdopr.openAllDiffs",
+					"when": "view == azdoprStatus:azdo && azdo:inReviewMode"
+				},
+				{
 					"command": "azdopr.changeThreadStatus",
 					"when": "false"
 				},
@@ -586,6 +596,11 @@
 					"command": "azdopr.setFileListLayoutAsFlat",
 					"when": "view == azdoprStatus:azdo && !fileListLayout:flat",
 					"group": "navigation"
+				},
+				{
+					"command": "azdopr.openAllDiffs",
+					"when": "view == azdoprStatus:azdo && azdo:inReviewMode",
+					"group": "navigation@1"
 				},
 				{
 					"command": "azdopr.openPullRequestInAzdo",

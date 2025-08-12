@@ -7,30 +7,27 @@
 import * as pathLib from 'path';
 import { GitPullRequestCommentThread } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import * as vscode from 'vscode';
-import { Repository } from './api/api';
 import { GitErrorCodes } from './api/api1';
 import { CredentialStore } from './azdo/credentials';
 import { FolderRepositoryManager } from './azdo/folderRepositoryManager';
-import { IFileChangeNodeWithUri, IRawFileChange, PullRequest } from './azdo/interface';
+import { PullRequest } from './azdo/interface';
 import { GHPRComment, GHPRCommentThread, TemporaryComment } from './azdo/prComment';
 import { PullRequestModel } from './azdo/pullRequestModel';
 import { PullRequestOverviewPanel } from './azdo/pullRequestOverview';
 import { RepositoriesManager } from './azdo/repositoriesManager';
 import { AzdoUserManager } from './azdo/userManager';
-import { convertRawFileChangeToFileChangeNode, getPositionFromThread, removeLeadingSlash } from './azdo/utils';
+import { getPositionFromThread } from './azdo/utils';
 import { AzdoWorkItem } from './azdo/workItem';
 import { CommentReply, resolveCommentHandler } from './commentHandlerResolver';
 import { DiffChangeType } from './common/diffHunk';
 import { getZeroBased } from './common/diffPositionMapping';
-import { GitChangeType, InMemFileChange } from './common/file';
+import { GitChangeType } from './common/file';
 import Logger from './common/logger';
 import { ITelemetry } from './common/telemetry';
-import { asImageDataURI, fromPRUri, fromReviewUri, ReviewUriParams, toPRUriAzdo } from './common/uri';
+import { asImageDataURI, fromReviewUri, ReviewUriParams } from './common/uri';
 import { formatError } from './common/utils';
-import { SETTINGS_NAMESPACE, URI_SCHEME_PR, URI_SCHEME_REVIEW } from './constants';
-import { getInMemPRContentProvider, provideDocumentContentForChangeModel } from './view/inMemPRContentProvider';
+import { SETTINGS_NAMESPACE } from './constants';
 import { PullRequestsTreeDataProvider } from './view/prsTreeDataProvider';
-import { PullRequestCommentingRangeProvider } from './view/pullRequestCommentingRangeProvider';
 import { ReviewManager } from './view/reviewManager';
 import { CommitNode } from './view/treeNodes/commitNode';
 import { DescriptionNode } from './view/treeNodes/descriptionNode';
@@ -775,6 +772,85 @@ export function registerCommands(
 				message: messages,
 				autoSend: true,
 			});
+		}),
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('azdopr.openAllDiffs', async () => {
+			// telemetry.sendTelemetryEvent('azdopr.openAllDiffs');
+
+			const activeReviewFolderManager = reposManager.folderManagers.find(rm => rm.activePullRequest);
+			const activeReviewManager = reviewManagers.find(rm => rm.hasActiveReview());
+			if (!activeReviewFolderManager || !activeReviewManager) {
+				vscode.window.showErrorMessage('No active pull request found.');
+				return;
+			}
+
+			const pr = activeReviewFolderManager.activePullRequest;
+
+			// Get changed files from review manager
+			const changedFiles = activeReviewManager.localFileChanges;
+			if (!changedFiles || changedFiles.length === 0) {
+				vscode.window.showInformationMessage('No changed files found in the current pull request.');
+				return;
+			}
+				// Prepare resource list for multi-file diff editor
+				const resourceList: { label: vscode.Uri; original: vscode.Uri; modified: vscode.Uri }[] = [];
+
+				for (const fileChange of changedFiles) {
+					const parentFilePath = fileChange.parentFilePath;
+					const filePath = fileChange.filePath;
+
+					// Handle image files if needed
+					let parentURI = parentFilePath;
+					let headURI = filePath;
+
+					try {
+					const parentImageURI = await asImageDataURI(parentFilePath, activeReviewManager.repository);
+					const headImageURI = await asImageDataURI(filePath, activeReviewFolderManager.repository);
+
+					if (parentImageURI) {
+						parentURI = parentImageURI;
+					}
+					if (headImageURI) {
+						headURI = headImageURI;
+					}
+
+						if (parentURI.scheme === 'data' || headURI.scheme === 'data') {
+							if (fileChange.status === GitChangeType.ADD) {
+								parentURI = vscode.Uri.parse('data:text/plain;base64,');
+							}
+							if (fileChange.status === GitChangeType.DELETE) {
+								headURI = vscode.Uri.parse('data:text/plain;base64,');
+							}
+						}
+					} catch (error) {
+						// If image handling fails, use original URIs
+						Logger.appendLine(`Image handling failed for ${fileChange.fileName}: ${error}`);
+					}
+
+					resourceList.push({
+						label: filePath,
+						original: parentURI,
+						modified: headURI,
+					});
+				}
+
+				// Get PR title for the multi-diff editor title
+			const prTitle = pr.item?.title || 'Pull Request';
+
+			try {
+				// Open multi-file diff editor
+				await vscode.commands.executeCommand(
+					'vscode.changes',
+					prTitle,
+					resourceList.map(resource => [resource.label, resource.original, resource.modified]),
+				);
+			} catch (error) {
+				const message = `Failed to open multi-file diff: ${error}`;
+				Logger.appendLine(message);
+				vscode.window.showErrorMessage(message);
+			}
 		}),
 	);
 }
