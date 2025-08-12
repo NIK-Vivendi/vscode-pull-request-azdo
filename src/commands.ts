@@ -794,18 +794,18 @@ export function registerCommands(
 				vscode.window.showInformationMessage('No changed files found in the current pull request.');
 				return;
 			}
-				// Prepare resource list for multi-file diff editor
-				const resourceList: { label: vscode.Uri; original: vscode.Uri; modified: vscode.Uri }[] = [];
+			// Prepare resource list for multi-file diff editor
+			const resourceList: { label: vscode.Uri; original: vscode.Uri; modified: vscode.Uri }[] = [];
 
-				for (const fileChange of changedFiles) {
-					const parentFilePath = fileChange.parentFilePath;
-					const filePath = fileChange.filePath;
+			for (const fileChange of changedFiles) {
+				const parentFilePath = fileChange.parentFilePath;
+				const filePath = fileChange.filePath;
 
-					// Handle image files if needed
-					let parentURI = parentFilePath;
-					let headURI = filePath;
+				// Handle image files if needed
+				let parentURI = parentFilePath;
+				let headURI = filePath;
 
-					try {
+				try {
 					const parentImageURI = await asImageDataURI(parentFilePath, activeReviewManager.repository);
 					const headImageURI = await asImageDataURI(filePath, activeReviewFolderManager.repository);
 
@@ -816,27 +816,27 @@ export function registerCommands(
 						headURI = headImageURI;
 					}
 
-						if (parentURI.scheme === 'data' || headURI.scheme === 'data') {
-							if (fileChange.status === GitChangeType.ADD) {
-								parentURI = vscode.Uri.parse('data:text/plain;base64,');
-							}
-							if (fileChange.status === GitChangeType.DELETE) {
-								headURI = vscode.Uri.parse('data:text/plain;base64,');
-							}
+					if (parentURI.scheme === 'data' || headURI.scheme === 'data') {
+						if (fileChange.status === GitChangeType.ADD) {
+							parentURI = vscode.Uri.parse('data:text/plain;base64,');
 						}
-					} catch (error) {
-						// If image handling fails, use original URIs
-						Logger.appendLine(`Image handling failed for ${fileChange.fileName}: ${error}`);
+						if (fileChange.status === GitChangeType.DELETE) {
+							headURI = vscode.Uri.parse('data:text/plain;base64,');
+						}
 					}
-
-					resourceList.push({
-						label: filePath,
-						original: parentURI,
-						modified: headURI,
-					});
+				} catch (error) {
+					// If image handling fails, use original URIs
+					Logger.appendLine(`Image handling failed for ${fileChange.fileName}: ${error}`);
 				}
 
-				// Get PR title for the multi-diff editor title
+				resourceList.push({
+					label: filePath,
+					original: parentURI,
+					modified: headURI,
+				});
+			}
+
+			// Get PR title for the multi-diff editor title
 			const prTitle = pr.item?.title || 'Pull Request';
 
 			try {

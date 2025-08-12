@@ -12,7 +12,7 @@
 	},
 	"enableProposedApi": false,
 	"preview": true,
-	"version": "1.0.2-nik-7",
+	"version": "1.1.0-nik-7",
 	"publisher": "ankitbko",
 	"engines": {
 		"vscode": "^1.97.0"
