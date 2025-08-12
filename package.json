@@ -12,7 +12,7 @@
 	},
 	"enableProposedApi": false,
 	"preview": true,
-	"version": "1.0.2",
+	"version": "1.1.2",
 	"publisher": "ankitbko",
 	"engines": {
 		"vscode": "^1.97.0"
@@ -412,6 +412,12 @@
 				"title": "Mark File As Not Viewed",
 				"category": "AzDO Pull Requests",
 				"icon": "$(eye-closed)"
+			},
+			{
+				"command": "azdopr.openAllDiffs",
+				"title": "Open All Changes",
+				"category": "AzDO Pull Requests",
+				"icon": "$(diff-multiple)"
 			}
 		],
 		"viewsWelcome": [
@@ -536,6 +542,10 @@
 					"when": "false"
 				},
 				{
+					"command": "azdopr.openAllDiffs",
+					"when": "view == azdoprStatus:azdo && azdo:inReviewMode"
+				},
+				{
 					"command": "azdopr.changeThreadStatus",
 					"when": "false"
 				},
@@ -581,6 +591,11 @@
 					"command": "azdopr.setFileListLayoutAsFlat",
 					"when": "view == azdoprStatus:azdo && !fileListLayout:flat",
 					"group": "navigation"
+				},
+				{
+					"command": "azdopr.openAllDiffs",
+					"when": "view == azdoprStatus:azdo && azdo:inReviewMode",
+					"group": "navigation@1"
 				},
 				{
 					"command": "azdopr.openPullRequestInAzdo",

@@ -344,6 +344,10 @@ export class ReviewManager {
 		}
 	}
 
+	public hasActiveReview(): boolean {
+		return this._folderRepoManager.activePullRequest != null;
+	}
+
 	public async updateComments(): Promise<void> {
 		const branch = this._repository.state.HEAD;
 		if (!branch) {
