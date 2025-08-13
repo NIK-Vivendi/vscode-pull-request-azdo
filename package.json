@@ -12,7 +12,7 @@
 	},
 	"enableProposedApi": false,
 	"preview": true,
-	"version": "1.1.0-nik-7",
+	"version": "1.1.1-nik",
 	"publisher": "ankitbko",
 	"engines": {
 		"vscode": "^1.97.0"
@@ -616,6 +616,11 @@
 				},
 				{
 					"command": "azdopr.pick",
+					"when": "view == azdopr:azdo && viewItem =~ /description/",
+					"group": "inline"
+				},
+				{
+					"command": "azdopr.openAllDiffs",
 					"when": "view == azdopr:azdo && viewItem =~ /description/",
 					"group": "inline"
 				},

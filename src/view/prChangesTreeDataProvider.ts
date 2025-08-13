@@ -91,7 +91,7 @@ export class PullRequestChangesTreeDataProvider
 		this._view.reveal(element, options);
 	}
 
-	async getChildren(element?: GitFileChangeNode): Promise<TreeNode[]> {
+	getChildren(element?: GitFileChangeNode): Promise<TreeNode[]> {
 		if (!element) {
 			const result: TreeNode[] = [];
 			if (this._pullRequestManagerMap.size >= 1) {
@@ -99,9 +99,9 @@ export class PullRequestChangesTreeDataProvider
 					result.push(item);
 				}
 			}
-			return result;
+			return Promise.resolve(result);
 		} else {
-			return await element.getChildren();
+			return element.getChildren();
 		}
 	}
 
