@@ -23,9 +23,14 @@ import { DiffChangeType } from './common/diffHunk';
 import { getZeroBased } from './common/diffPositionMapping';
 import { GitChangeType } from './common/file';
 import Logger from './common/logger';
-import { findFolderManager } from './common/multiDiff';
+import {
+	getPullRequestReviewDiffViewArgs,
+	getPullRequestTitle,
+	type MultiDiffViewFileInput,
+	openPullRequestDiffView,
+} from './common/multiDiff';
 import { ITelemetry } from './common/telemetry';
-import { asImageDataURI, EMPTY_IMAGE_URI, fromReviewUri, ReviewUriParams, toPRUriAzdo } from './common/uri';
+import { asImageDataURI, fromReviewUri, ReviewUriParams } from './common/uri';
 import { formatError } from './common/utils';
 import { SETTINGS_NAMESPACE } from './constants';
 import { PullRequestsTreeDataProvider } from './view/prsTreeDataProvider';
@@ -496,14 +501,14 @@ export function registerCommands(
 							emptyFileUri,
 							`${fileChange.fileName}`,
 							{ preserveFocus: true },
-					  )
+						)
 					: vscode.commands.executeCommand(
 							'vscode.diff',
 							emptyFileUri,
 							fileChange.parentFilePath,
 							`${fileChange.fileName}`,
 							{ preserveFocus: true },
-					  );
+						);
 			}
 
 			// Show the file change in a diff view.
@@ -780,102 +785,27 @@ export function registerCommands(
 		vscode.commands.registerCommand('azdopr.openAllDiffs', async (pr?: DescriptionNode | PullRequestModel) => {
 			telemetry.sendTelemetryEvent('azdopr.openAllDiffs');
 
-			const { targetPR, folderManager } = findFolderManager(reposManager, pr);
-
-			if (!folderManager) {
-				vscode.window.showErrorMessage('Could not find folder manager for pull request.');
-				return;
-			}
-
+			let resourceList: MultiDiffViewFileInput[];
 			try {
-				// Get file changes directly from the PR model without checking out
-				const fileChanges = await targetPR.getFileDiffChanges(folderManager.repository);
-
-				if (!fileChanges || fileChanges.length === 0) {
-					vscode.window.showInformationMessage('No changed files found in the current pull request.');
-					return;
+				if (!pr) {
+					resourceList = await openPullRequestDiffView(reviewManagers);
+				} else {
+					resourceList = await getPullRequestReviewDiffViewArgs(reposManager, pr);
 				}
-
-				// Prepare resource list for multi-file diff editor
-				const resourceList: { label: vscode.Uri; original?: vscode.Uri; modified?: vscode.Uri }[] = [];
-
-				for (const change of fileChanges) {
-					let fileName = change.fileName;
-					// if (change.status === GitChangeType.DELETE) {
-					// 	fileName = change.previousFileName!;
-					// }
-
-					let filePath = folderManager.repository.rootUri.with({ path: fileName });
-					let parentFileName = change.previousFileName || change.fileName;
-					let parentFilePath = folderManager.repository.rootUri.with({ path: parentFileName });
-
-					// Create URIs for the diff using the review scheme
-					const headCommit = targetPR.head.sha;
-
-					// For the base (original) version
-					let originalUri: vscode.Uri | undefined;
-					if (change.status !== GitChangeType.ADD) {
-						originalUri = toPRUriAzdo(
-							parentFilePath,
-							targetPR,
-							change.baseCommit,
-							headCommit,
-							parentFileName,
-							true,
-							change.status,
-						);
-					}
-
-					// For the modified (head) version
-					let modifiedUri: vscode.Uri | undefined;
-					if (change.status !== GitChangeType.DELETE) {
-						modifiedUri = toPRUriAzdo(
-							filePath,
-							targetPR,
-							change.baseCommit,
-							headCommit,
-							fileName,
-							false,
-							change.status,
-						);
-					}
-
-					if (originalUri) {
-						originalUri = (await asImageDataURI(originalUri, folderManager.repository)) || originalUri;
-					}
-					if (modifiedUri) {
-						modifiedUri = (await asImageDataURI(modifiedUri, folderManager.repository)) || modifiedUri;
-					}
-					if (originalUri?.scheme === 'data' || modifiedUri?.scheme === 'data') {
-						if (change.status === GitChangeType.ADD) {
-							originalUri = EMPTY_IMAGE_URI;
-						}
-						if (change.status === GitChangeType.DELETE) {
-							modifiedUri = EMPTY_IMAGE_URI;
-						}
-					}
-
-					resourceList.push({
-						label: vscode.Uri.file(fileName),
-						original: originalUri,
-						modified: modifiedUri,
-					});
-				}
-
-				// Get PR title for the multi-diff editor title
-				const prTitle = targetPR.item?.title ?? 'Pull Request';
-
-				// Open multi-file diff editor
-				await vscode.commands.executeCommand(
-					'vscode.changes',
-					prTitle,
-					resourceList.map(resource => [resource.label, resource.original, resource.modified]),
-				);
 			} catch (error) {
 				const message = `Failed to open multi-file diff: ${error}`;
 				Logger.appendLine(message);
 				vscode.window.showErrorMessage(message);
 			}
+
+			const prTitle = getPullRequestTitle(reposManager, pr);
+
+			// Open multi-file diff editor
+			await vscode.commands.executeCommand(
+				'vscode.changes',
+				prTitle,
+				resourceList.map(resource => [resource.label, resource.original, resource.modified]),
+			);
 		}),
 	);
 }
