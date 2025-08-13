@@ -12,7 +12,7 @@
 	},
 	"enableProposedApi": false,
 	"preview": true,
-	"version": "1.1.1-nik",
+	"version": "1.1.2-nik",
 	"publisher": "ankitbko",
 	"engines": {
 		"vscode": "^1.97.0"
@@ -163,9 +163,9 @@
 					"default": true,
 					"description": "When true, the option to delete the remote will be selected by default when deleting a branch from a pull request."
 				},
-				"azdoPullRequests.unshallowPullRequestOnCheckout":{
-					"type":"boolean",
-					"default":true,
+				"azdoPullRequests.unshallowPullRequestOnCheckout": {
+					"type": "boolean",
+					"default": true,
 					"description": "When true, the pull request will be unshallowed on checkout."
 				}
 			}
@@ -779,14 +779,14 @@
 		"vscode:prepublish": "yarn run bundle",
 		"browsertest:preprocess": "yarn run compile && tsc ./src/test/browser/runTests.ts --outDir ./dist/browser/test --rootDir ./src/test/browser --target es6 --module commonjs",
 		"browsertest": "yarn run browsertest:preprocess && node ./dist/browser/test/runTests.js",
-		"bundle": "webpack --mode production --env esbuild",
-		"bundle:node": "webpack --mode production --config-name extension:node --config-name webviews",
-		"bundle:web": "webpack --mode production --config-name extension:webworker --config-name webviews",
+		"bundle": "rspack --mode production --env esbuild",
+		"bundle:node": "rspack --mode production --config-name extension:node --config-name webviews",
+		"bundle:web": "rspack --mode production --config-name extension:webworker --config-name webviews",
 		"clean": "rm -r dist/ out/",
-		"compile": "webpack --mode development --env esbuild",
+		"compile": "rspack --mode development --env esbuild",
 		"compile:test": "ttsc -p tsconfig.test.json",
-		"compile:node": "webpack --mode development --config-name extension:node --config-name webviews",
-		"compile:web": "webpack --mode development --config-name extension:webworker --config-name webviews",
+		"compile:node": "rspack --mode development --config-name extension:node --config-name webviews",
+		"compile:web": "rspack --mode development --config-name extension:webworker --config-name webviews",
 		"lint": "eslint --fix --cache --config .eslintrc.json --ignore-pattern src/env/browser/**/* \"{src,webviews}/**/*.ts?\"",
 		"lint:browser": "eslint --fix --cache --cache-location .eslintcache.browser --config .eslintrc.browser.json --ignore-pattern src/env/node/**/* \"{src,webviews}/**/*.ts?\"",
 		"package": "vsce package --yarn",
@@ -795,10 +795,12 @@
 		"test:preprocess": "yarn run compile:test && yarn run test:preprocess-svg",
 		"test:preprocess-svg": "node scripts/preprocess-svg --in ../resources/ --out out/resources",
 		"update-dts": "pushd \"src/@types\" && npx vscode-dts master && npx vscode-dts dev && popd",
-		"watch": "webpack --watch --mode development --env esbuild",
-		"watch:web": "webpack --watch --mode development --config-name extension:webworker --config-name webviews"
+		"watch": "rspack --watch --mode development --env esbuild",
+		"watch:web": "rspack --watch --mode development --config-name extension:webworker --config-name webviews"
 	},
 	"devDependencies": {
+		"@rspack/cli": "^1.4.11",
+		"@rspack/core": "^1.4.11",
 		"@semantic-release/changelog": "^6.0.3",
 		"@semantic-release/exec": "^7.0.3",
 		"@semantic-release/git": "^10.0.1",
@@ -847,7 +849,7 @@
 		"mocha-junit-reporter": "2.2.1",
 		"mocha-multi-reporters": "1.5.1",
 		"path-browserify": "1.0.1",
-		"prettier": "2.2.1",
+		"prettier": "3.6.2",
 		"process": "^0.11.10",
 		"raw-loader": "4.0.2",
 		"react-testing-library": "7.0.1",
@@ -865,12 +867,11 @@
 		"ts-loader": "8.0.18",
 		"tty": "1.0.1",
 		"ttypescript": "^1.5.12",
-		"typescript": "4.2.3",
+		"typescript": "5.9.2",
 		"url": "^0.11.0",
 		"util": "0.12.3",
 		"vscode-test": "^1.5.1",
-		"webpack": "5.97.1",
-		"webpack-cli": "6.0.1"
+		"webpack": "5.97.1"
 	},
 	"dependencies": {
 		"@types/diff": "^7.0.1",
