@@ -14,11 +14,11 @@ const execFile = require('child_process').execFile;
 const path = require('path');
 const { EsbuildPlugin } = require('esbuild-loader');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
-const JSON5 = require('json5');
 const TerserPlugin = require('terser-webpack-plugin');
 const { rspack } = require('@rspack/core');
 
 async function resolveTSConfig(configFile) {
+	/** @type string */
 	const data = await new Promise((resolve, reject) => {
 		execFile(
 			'yarn',
@@ -34,8 +34,19 @@ async function resolveTSConfig(configFile) {
 		);
 	});
 
-	const index = data.indexOf('\n');
-	const json = JSON5.parse(data.substr(index + 1));
+	const lines = data.split('\n');
+	lines.splice(0, 1);
+
+	if (!lines?.[0]?.startsWith('{')) {
+		lines.splice(0, 1);
+		lines.splice(lines.length - 1, 1);
+	}
+
+	lines.splice(lines.length - 1, 1);
+
+	const transformed = lines.join('\n');
+
+	const json = JSON.parse(transformed);
 	return json;
 }
 
@@ -87,7 +98,7 @@ async function getWebviewConfig(mode, env, entry) {
 							// Keep the class names
 							keepNames: true,
 							target: 'es2019',
-					  })
+						})
 					: new TerserPlugin({
 							extractComments: false,
 							parallel: true,
@@ -96,7 +107,7 @@ async function getWebviewConfig(mode, env, entry) {
 								keep_classnames: /^AbortSignal$/,
 								module: true,
 							},
-					  }),
+						}),
 			],
 		},
 		module: {
@@ -113,7 +124,7 @@ async function getWebviewConfig(mode, env, entry) {
 									target: 'es2019',
 									tsconfigRaw: await resolveTSConfig(path.join(__dirname, 'tsconfig.webviews.json')),
 								},
-						  }
+							}
 						: {
 								loader: 'ts-loader',
 								options: {
@@ -121,7 +132,7 @@ async function getWebviewConfig(mode, env, entry) {
 									experimentalWatchApi: true,
 									transpileOnly: true,
 								},
-						  },
+							},
 				},
 				{
 					test: /\.css/,
@@ -174,14 +185,12 @@ async function getExtensionConfig(target, mode, env) {
 	];
 
 	if (target === 'webworker') {
-		plugins.push(new rspack.ProvidePlugin({
-			process: path.join(
-				__dirname,
-				'node_modules',
-				'process',
-				'browser.js'),
-			Buffer: ['buffer', 'Buffer'],
-		}));
+		plugins.push(
+			new rspack.ProvidePlugin({
+				process: path.join(__dirname, 'node_modules', 'process', 'browser.js'),
+				Buffer: ['buffer', 'Buffer'],
+			}),
+		);
 	}
 
 	const entry = {
@@ -214,7 +223,7 @@ async function getExtensionConfig(target, mode, env) {
 							// // Keep the class names
 							// keepNames: true,
 							target: 'es2019',
-					  })
+						})
 					: new TerserPlugin({
 							extractComments: false,
 							parallel: true,
@@ -224,7 +233,7 @@ async function getExtensionConfig(target, mode, env) {
 								// keep_classnames: true,
 								module: true,
 							},
-					  }),
+						}),
 			],
 		},
 		module: {
@@ -246,7 +255,7 @@ async function getExtensionConfig(target, mode, env) {
 										),
 									),
 								},
-						  }
+							}
 						: {
 								loader: 'ts-loader',
 								options: {
@@ -257,7 +266,7 @@ async function getExtensionConfig(target, mode, env) {
 									experimentalWatchApi: true,
 									transpileOnly: true,
 								},
-						  },
+							},
 				},
 				// // FIXME: apollo-client uses .mjs, which imposes hard restrictions
 				// // on imports available from other callers. They probably didn't know
@@ -312,7 +321,7 @@ async function getExtensionConfig(target, mode, env) {
 								'gitProviders',
 								'api',
 							),
-					  }
+						}
 					: undefined,
 			// : {
 			// 	'universal-user-agent': path.join(__dirname, 'node_modules', 'universal-user-agent', 'dist-node', 'index.js'),
@@ -322,35 +331,28 @@ async function getExtensionConfig(target, mode, env) {
 					? {
 							path: require.resolve('path-browserify'),
 							url: require.resolve('url'),
-							stream: require.resolve("stream-browserify"),
+							stream: require.resolve('stream-browserify'),
 							// zlib: require.resolve("browserify-zlib"),
 							// crypto: require.resolve("crypto-browserify"),
-							http: require.resolve("stream-http"),
-							https: require.resolve("https-browserify"),
+							http: require.resolve('stream-http'),
+							https: require.resolve('https-browserify'),
 							// util: require.resolve("util/"),
-							buffer: require.resolve("buffer/"),
+							buffer: require.resolve('buffer/'),
 							// assert: require.resolve("assert/"),
 							// stream:false,
 							zlib: false,
-							crypto:false,
+							crypto: false,
 							// http: false,
 							//https:false,
 							util: false,
 							// buffer:false,
-							'assert': require.resolve('assert'),
-							'os': require.resolve('os-browserify/browser'),
-							"constants": require.resolve("constants-browserify"),
-							fs: path.resolve(
-								__dirname,
-								'src',
-								'env',
-								'browser',
-								'fs',
-							),
+							assert: require.resolve('assert'),
+							os: require.resolve('os-browserify/browser'),
+							constants: require.resolve('constants-browserify'),
+							fs: path.resolve(__dirname, 'src', 'env', 'browser', 'fs'),
 							net: false,
-							tls: false
-
-					  }
+							tls: false,
+						}
 					: undefined,
 			extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
 			symlinks: false,
