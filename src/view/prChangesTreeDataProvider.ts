@@ -14,7 +14,8 @@ import { BaseTreeNode, TreeNode } from './treeNodes/treeNode';
 
 export class PullRequestChangesTreeDataProvider
 	extends vscode.Disposable
-	implements vscode.TreeDataProvider<TreeNode>, BaseTreeNode {
+	implements vscode.TreeDataProvider<TreeNode>, BaseTreeNode
+{
 	private _onDidChangeTreeData = new vscode.EventEmitter<void>();
 	readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 	private _disposables: vscode.Disposable[] = [];

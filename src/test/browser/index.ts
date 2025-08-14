@@ -12,7 +12,7 @@ async function runAllExtensionTests(testsRoot: string, clb: (error: Error | null
 
 	mocha.setup({
 		ui: 'bdd',
-		reporter: undefined
+		reporter: undefined,
 	});
 
 	try {

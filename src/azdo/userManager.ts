@@ -11,7 +11,10 @@ export class AzdoUserManager implements vscode.Disposable {
 	private _entitlementApi?: IUserEntitlementApi;
 	private _identityCache: User[];
 
-	constructor(private readonly _credentialStore: CredentialStore, private readonly _telemetry: ITelemetry) {
+	constructor(
+		private readonly _credentialStore: CredentialStore,
+		private readonly _telemetry: ITelemetry,
+	) {
 		this._identityCache = [];
 	}
 

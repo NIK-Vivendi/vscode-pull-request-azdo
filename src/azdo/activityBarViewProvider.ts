@@ -152,15 +152,13 @@ export class PullRequestViewProvider extends WebviewBase implements vscode.Webvi
 	}
 
 	private close(message: IRequestMessage<string>): void {
-		vscode.commands
-			.executeCommand<GitPullRequestCommentThread>('azdopr.close', this._item, message.args)
-			.then(comment => {
-				if (comment) {
-					this._replyMessage(message, {
-						value: comment,
-					});
-				}
-			});
+		vscode.commands.executeCommand<GitPullRequestCommentThread>('azdopr.close', this._item, message.args).then(comment => {
+			if (comment) {
+				this._replyMessage(message, {
+					value: comment,
+				});
+			}
+		});
 	}
 
 	// private createComment(message: IRequestMessage<string>) {

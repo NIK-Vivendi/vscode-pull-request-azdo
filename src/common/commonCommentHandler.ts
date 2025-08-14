@@ -17,7 +17,10 @@ import Logger from './logger';
 import { fromPRUri, fromReviewUri } from './uri';
 
 export class CommonCommentHandler {
-	constructor(public pullRequestModel: PullRequestModel, private _folderReposManager: FolderRepositoryManager) {}
+	constructor(
+		public pullRequestModel: PullRequestModel,
+		private _folderReposManager: FolderRepositoryManager,
+	) {}
 
 	public async createOrReplyComment(
 		thread: GHPRCommentThread,

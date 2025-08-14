@@ -303,7 +303,9 @@ export async function parseDiffAzdo(
 	repository: Repository,
 	parentCommit: string,
 ): Promise<(InMemFileChange | SlimFileChange)[]> {
-	const fileChanges: (InMemFileChange | SlimFileChange)[] = await Promise.all(reviews.map(r => parseSingleDiffAzdo(r, repository, parentCommit)));
+	const fileChanges: (InMemFileChange | SlimFileChange)[] = await Promise.all(
+		reviews.map(r => parseSingleDiffAzdo(r, repository, parentCommit)),
+	);
 	return fileChanges;
 }
 
@@ -311,7 +313,7 @@ export async function parseSingleDiffAzdo(
 	review: IAzdoRawFileChange,
 	repository: Repository,
 	parentCommit: string,
-): Promise<(InMemFileChange | SlimFileChange)> {
+): Promise<InMemFileChange | SlimFileChange> {
 	const gitChangeType = getGitChangeTypeFromVersionControlChangeType(review.status);
 
 	if (review.diffHunks === undefined) {

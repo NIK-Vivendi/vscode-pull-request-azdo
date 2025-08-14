@@ -55,7 +55,11 @@ export class PullRequestTitleSourceQuickPick implements vscode.QuickPickItem {
 	static fromPullRequestTitleSource(pullRequestTitleSource: PullRequestTitleSource) {
 		return new this(this.getDescription(pullRequestTitleSource), pullRequestTitleSource, pullRequestTitleSource);
 	}
-	constructor(public description: string, public pullRequestTitleSource: PullRequestTitleSource, public label: string) {}
+	constructor(
+		public description: string,
+		public pullRequestTitleSource: PullRequestTitleSource,
+		public label: string,
+	) {}
 }
 
 export type PullRequestDescriptionSource = 'template' | 'commit' | 'custom' | 'ask';

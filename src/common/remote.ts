@@ -22,7 +22,11 @@ export class Remote {
 		return `${normalizedUri!.scheme}://${normalizedUri!.authority}`;
 	}
 
-	constructor(public readonly remoteName: string, public readonly url: string, public readonly gitProtocol: Protocol) {}
+	constructor(
+		public readonly remoteName: string,
+		public readonly url: string,
+		public readonly gitProtocol: Protocol,
+	) {}
 
 	equals(remote: Remote): boolean {
 		if (this.remoteName !== remote.remoteName) {

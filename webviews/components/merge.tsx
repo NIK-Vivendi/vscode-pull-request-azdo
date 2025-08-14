@@ -110,16 +110,16 @@ export const MergeStatus = ({ mergeable, isSimple }: { mergeable: PullRequestMer
 			{isSimple
 				? null
 				: mergeable === PullRequestMergeability.Succeeded
-				? checkIcon
-				: mergeable === PullRequestMergeability.RejectedByPolicy || mergeable === PullRequestMergeability.Failure
-				? deleteIcon
-				: pendingIcon}
+					? checkIcon
+					: mergeable === PullRequestMergeability.RejectedByPolicy || mergeable === PullRequestMergeability.Failure
+						? deleteIcon
+						: pendingIcon}
 			<div>
 				{mergeable === PullRequestMergeability.Succeeded
 					? 'This branch has no conflicts with the base branch.'
 					: mergeable === PullRequestMergeability.Queued
-					? 'Checking if this branch can be merged...'
-					: 'This branch has conflicts that must be resolved.'}
+						? 'Checking if this branch can be merged...'
+						: 'This branch has conflicts that must be resolved.'}
 			</div>
 		</div>
 	);

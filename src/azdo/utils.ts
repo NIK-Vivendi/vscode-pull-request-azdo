@@ -421,11 +421,11 @@ export function isCommentResolved(status: CommentThreadStatus): boolean {
 export function convertRawFileChangeToFileChangeNode(fileChange: IRawFileChange): IFileChangeNode {
 	return {
 		blobUrl: fileChange.blob_url,
-		status:  getGitChangeTypeFromVersionControlChangeType(fileChange.status),
+		status: getGitChangeTypeFromVersionControlChangeType(fileChange.status),
 		fileName: fileChange.filename,
 		previousFileName: fileChange.previous_filename,
 		sha: fileChange.file_sha,
 		diffHunks: fileChange.diffHunks,
-		previousFileSha: fileChange.previous_file_sha
+		previousFileSha: fileChange.previous_file_sha,
 	};
 }

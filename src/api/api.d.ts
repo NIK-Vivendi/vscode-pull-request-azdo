@@ -242,7 +242,14 @@ export interface IGit {
 }
 
 export interface TitleAndDescriptionProvider {
-	provideTitleAndDescription(context: { commitMessages: string[], patches: string[] | { patch: string, fileUri: string, previousFileUri?: string }[], issues?: { reference: string, content: string }[] }, token: CancellationToken): Promise<{ title: string, description?: string } | undefined>;
+	provideTitleAndDescription(
+		context: {
+			commitMessages: string[];
+			patches: string[] | { patch: string; fileUri: string; previousFileUri?: string }[];
+			issues?: { reference: string; content: string }[];
+		},
+		token: CancellationToken,
+	): Promise<{ title: string; description?: string } | undefined>;
 }
 
 export interface ReviewerComments {
@@ -254,7 +261,14 @@ export interface ReviewerComments {
 }
 
 export interface ReviewerCommentsProvider {
-	provideReviewerComments(context: { repositoryRoot: string, commitMessages: string[], patches: { patch: string, fileUri: string, previousFileUri?: string }[] }, token: CancellationToken): Promise<ReviewerComments>;
+	provideReviewerComments(
+		context: {
+			repositoryRoot: string;
+			commitMessages: string[];
+			patches: { patch: string; fileUri: string; previousFileUri?: string }[];
+		},
+		token: CancellationToken,
+	): Promise<ReviewerComments>;
 }
 
 export interface API {

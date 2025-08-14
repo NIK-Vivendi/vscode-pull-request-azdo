@@ -13,7 +13,10 @@ export class DirectoryTreeNode extends TreeNode implements vscode.TreeItem {
 	public children: (RemoteFileChangeNode | InMemFileChangeNode | GitFileChangeNode | DirectoryTreeNode)[] = [];
 	private pathToChild: Map<string, DirectoryTreeNode> = new Map();
 
-	constructor(public parent: TreeNodeParent, public label: string) {
+	constructor(
+		public parent: TreeNodeParent,
+		public label: string,
+	) {
 		super();
 		this.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
 	}

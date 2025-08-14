@@ -164,7 +164,10 @@ class LiveShareRepository {
 	rootUri: vscode.Uri;
 	state: LiveShareRepositoryState;
 
-	constructor(public workspaceFolder: vscode.WorkspaceFolder, public proxy: SharedServiceProxy) {}
+	constructor(
+		public workspaceFolder: vscode.WorkspaceFolder,
+		public proxy: SharedServiceProxy,
+	) {}
 
 	public async initialize() {
 		const result = await this.proxy.request(VSLS_REQUEST_NAME, [

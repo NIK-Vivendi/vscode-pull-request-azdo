@@ -31,7 +31,7 @@ export class QueryProvider {
 	get octokit(): Octokit {
 		// Cast through "any" because SinonStubbedInstance<Octokit> does not propertly map the type of the
 		// overloaded "authenticate" method.
-		return (this._octokit as any) as Octokit;
+		return this._octokit as any as Octokit;
 	}
 
 	expectGraphQLQuery<T>(q: QueryOptions, result: ApolloQueryResult<T>) {
@@ -74,7 +74,7 @@ export class QueryProvider {
 										.map(v => inspect(v))
 										.join(', ')})`,
 								);
-						  });
+							});
 				currentStub[accessor] = nextStub;
 			}
 			currentStub = nextStub;

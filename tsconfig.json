@@ -6,13 +6,7 @@
 		"jsxFragmentFactory": "vscppf",
 		// "strictNullChecks": true,
 		"tsBuildInfoFile": "tsconfig.tsbuildinfo",
-		"types": [
-			"node"
-		]
+		"types": ["node"]
 	},
-	"exclude": [
-		"node_modules",
-		"src/test",
-		"webviews"
-	]
+	"exclude": ["node_modules", "src/test", "webviews"]
 }

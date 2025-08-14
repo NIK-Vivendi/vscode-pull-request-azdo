@@ -210,7 +210,13 @@ describe('GitHub Pull Requests view', function () {
 
 			await repository.createBranch('non-pr-branch', false);
 
-			const manager = new FolderRepositoryManager(repository, telemetry, new GitApiImpl(), credentialStore, fileReviewedStatusService);
+			const manager = new FolderRepositoryManager(
+				repository,
+				telemetry,
+				new GitApiImpl(),
+				credentialStore,
+				fileReviewedStatusService,
+			);
 			const reposManager = new RepositoriesManager([manager], credentialStore, telemetry);
 			sinon.stub(manager, 'createAzdoRepository').callsFake((r, cs) => {
 				assert.deepEqual(r, remote);

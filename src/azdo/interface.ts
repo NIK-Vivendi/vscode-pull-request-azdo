@@ -158,7 +158,6 @@ export interface IRawFileChange {
 	headCommit: string;
 }
 
-
 export interface IFileChangeNode {
 	status: GitChangeType;
 	sha?: string;
@@ -173,7 +172,6 @@ export interface IFileChangeNodeWithUri extends IFileChangeNode {
 	filePath: Uri;
 	parentFilePath: Uri;
 }
-
 
 export interface IPullRequestsPagingOptions {
 	fetchNextPage: boolean;

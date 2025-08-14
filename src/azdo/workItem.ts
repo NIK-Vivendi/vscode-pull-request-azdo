@@ -17,7 +17,10 @@ export class AzdoWorkItem implements vscode.Disposable {
 	private _hub: Azdo | undefined;
 	private _workTracking?: IWorkItemTrackingApi;
 
-	constructor(private readonly _credentialStore: CredentialStore, private readonly _telemetry: ITelemetry) {}
+	constructor(
+		private readonly _credentialStore: CredentialStore,
+		private readonly _telemetry: ITelemetry,
+	) {}
 
 	async ensure(): Promise<AzdoWorkItem> {
 		if (!this._credentialStore.isAuthenticated()) {

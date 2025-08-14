@@ -39,7 +39,11 @@ export class DetachedHeadError extends Error {
 }
 
 export class BadUpstreamError extends Error {
-	constructor(public branchName: string, public upstreamRef: UpstreamRef, public problem: string) {
+	constructor(
+		public branchName: string,
+		public upstreamRef: UpstreamRef,
+		public problem: string,
+	) {
 		super();
 	}
 

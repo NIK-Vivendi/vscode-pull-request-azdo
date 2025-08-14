@@ -119,9 +119,8 @@ type ScalarSetterFn<F, Self> = (value: F) => Self;
  * Conditional type used to infer the call signature of a single setter function on a generated {@link Builder} type based on
  * the (compile-time) type of a {@link Template} property.
  */
-type SetterFn<F, FT, Self> = FT extends LinkedFieldTemplate<any, infer T>
-	? LinkedSetterFn<F, T, Self>
-	: ScalarSetterFn<F, Self>;
+type SetterFn<F, FT, Self> =
+	FT extends LinkedFieldTemplate<any, infer T> ? LinkedSetterFn<F, T, Self> : ScalarSetterFn<F, Self>;
 
 /**
  * Instance that progressively assembles an object of record type `R` as you call a sequence of {@link SetterFn|setter functions}.

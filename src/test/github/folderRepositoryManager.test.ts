@@ -38,7 +38,13 @@ describe('PullRequestManager', function () {
 		gitImpl.registerGitProvider(mockGitProvider);
 		const credentialStore = new CredentialStore(telemetry, secretStorage, gitImpl);
 		fileReviewedStatusService = sinon.createStubInstance(FileReviewedStatusService);
-		manager = new FolderRepositoryManager(repository, telemetry, new GitApiImpl(), credentialStore, fileReviewedStatusService);
+		manager = new FolderRepositoryManager(
+			repository,
+			telemetry,
+			new GitApiImpl(),
+			credentialStore,
+			fileReviewedStatusService,
+		);
 	});
 
 	afterEach(function () {

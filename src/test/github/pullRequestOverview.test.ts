@@ -48,7 +48,13 @@ describe('PullRequestOverview', function () {
 		gitImpl.registerGitProvider(mockGitProvider);
 		const credentialStore = new CredentialStore(telemetry, createFakeSecretStorage(), gitImpl);
 		fileReviewedStatusService = sinon.createStubInstance(FileReviewedStatusService);
-		pullRequestManager = new FolderRepositoryManager(repository, telemetry, new GitApiImpl(), credentialStore, fileReviewedStatusService);
+		pullRequestManager = new FolderRepositoryManager(
+			repository,
+			telemetry,
+			new GitApiImpl(),
+			credentialStore,
+			fileReviewedStatusService,
+		);
 		workItem = new AzdoWorkItem(credentialStore, telemetry);
 		userManager = new AzdoUserManager(credentialStore, telemetry);
 

@@ -70,7 +70,7 @@ export class MockRepository implements Repository {
 		mergeChanges: [],
 		indexChanges: [],
 		workingTreeChanges: [],
-		onDidChange: () => ({ dispose() { } }),
+		onDidChange: () => ({ dispose() {} }),
 	};
 	private _config: Map<string, string> = new Map();
 	private _branches: Branch[] = [];
@@ -86,7 +86,7 @@ export class MockRepository implements Repository {
 
 	ui: RepositoryUIState = {
 		selected: true,
-		onDidChange: () => ({ dispose() { } }),
+		onDidChange: () => ({ dispose() {} }),
 	};
 
 	async getConfigs(): Promise<{ key: string; value: string }[]> {
@@ -262,9 +262,7 @@ export class MockRepository implements Repository {
 			remoteName = arg0;
 		}
 
-		const index = this._expectedFetches.findIndex(
-			f => f.remoteName === remoteName && f.ref === ref && f.depth === depth,
-		);
+		const index = this._expectedFetches.findIndex(f => f.remoteName === remoteName && f.ref === ref && f.depth === depth);
 		if (index === -1) {
 			throw new Error(`Unexpected fetch(${remoteName}, ${ref}, ${depth})`);
 		}

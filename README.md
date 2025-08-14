@@ -66,6 +66,7 @@ Learn all about different features of the extension in the [wiki](https://github
 - _Description_: The commit to use to get diff against the PR branch's HEAD. Read more about different options in [wiki](https://github.com/ankitbko/vscode-pull-request-azdo/wiki/Diff-Options-HEAD-vs-Merge-Base)
 
 #### azdoPullRequests.patToken
+
 - _type_: string
 - _required_: false
 - _default_: ""

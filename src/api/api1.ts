@@ -7,7 +7,14 @@ import * as vscode from 'vscode';
 import { APIState, PublishEvent } from '../@types/git';
 import Logger from '../common/logger';
 import { TernarySearchTree } from '../common/utils';
-import { API, IGit, PostCommitCommandsProvider, Repository, ReviewerCommentsProvider, TitleAndDescriptionProvider } from './api';
+import {
+	API,
+	IGit,
+	PostCommitCommandsProvider,
+	Repository,
+	ReviewerCommentsProvider,
+	TitleAndDescriptionProvider,
+} from './api';
 
 export const enum RefType {
 	Head,
@@ -49,7 +56,6 @@ export const enum GitErrorCodes {
 	CantRebaseMultipleBranches = 'CantRebaseMultipleBranches',
 	PatchDoesNotApply = 'PatchDoesNotApply',
 }
-
 
 export class GitApiImpl implements API, IGit, vscode.Disposable {
 	private static _handlePool: number = 0;
@@ -158,10 +164,10 @@ export class GitApiImpl implements API, IGit, vscode.Disposable {
 			if (gitProvider.registerPostCommitCommandsProvider) {
 				return gitProvider.registerPostCommitCommandsProvider(provider);
 			}
-			return { dispose: () => { } };
+			return { dispose: () => {} };
 		});
 		return {
-			dispose: () => disposables.forEach(disposable => disposable.dispose())
+			dispose: () => disposables.forEach(disposable => disposable.dispose()),
 		};
 	}
 
@@ -169,19 +175,21 @@ export class GitApiImpl implements API, IGit, vscode.Disposable {
 		return GitApiImpl._handlePool++;
 	}
 
-	private _titleAndDescriptionProviders: Set<{ title: string, provider: TitleAndDescriptionProvider }> = new Set();
+	private _titleAndDescriptionProviders: Set<{ title: string; provider: TitleAndDescriptionProvider }> = new Set();
 	registerTitleAndDescriptionProvider(title: string, provider: TitleAndDescriptionProvider): vscode.Disposable {
 		const registeredValue = { title, provider };
 		this._titleAndDescriptionProviders.add(registeredValue);
 		this._disposables.push({
-			dispose: () => this._titleAndDescriptionProviders.delete(registeredValue)
+			dispose: () => this._titleAndDescriptionProviders.delete(registeredValue),
 		});
 		return this;
 	}
 
-	getTitleAndDescriptionProvider(searchTerm?: string): { title: string, provider: TitleAndDescriptionProvider } | undefined {
+	getTitleAndDescriptionProvider(searchTerm?: string): { title: string; provider: TitleAndDescriptionProvider } | undefined {
 		if (!searchTerm) {
-			return this._titleAndDescriptionProviders.size > 0 ? this._titleAndDescriptionProviders.values().next().value : undefined;
+			return this._titleAndDescriptionProviders.size > 0
+				? this._titleAndDescriptionProviders.values().next().value
+				: undefined;
 		} else {
 			for (const provider of this._titleAndDescriptionProviders) {
 				if (provider.title.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -191,17 +199,17 @@ export class GitApiImpl implements API, IGit, vscode.Disposable {
 		}
 	}
 
-	private _reviewerCommentsProviders: Set<{ title: string, provider: ReviewerCommentsProvider }> = new Set();
+	private _reviewerCommentsProviders: Set<{ title: string; provider: ReviewerCommentsProvider }> = new Set();
 	registerReviewerCommentsProvider(title: string, provider: ReviewerCommentsProvider): vscode.Disposable {
 		const registeredValue = { title, provider };
 		this._reviewerCommentsProviders.add(registeredValue);
 		this._disposables.push({
-			dispose: () => this._reviewerCommentsProviders.delete(registeredValue)
+			dispose: () => this._reviewerCommentsProviders.delete(registeredValue),
 		});
 		return this;
 	}
 
-	getReviewerCommentsProvider(): { title: string, provider: ReviewerCommentsProvider } | undefined {
+	getReviewerCommentsProvider(): { title: string; provider: ReviewerCommentsProvider } | undefined {
 		return this._reviewerCommentsProviders.size > 0 ? this._reviewerCommentsProviders.values().next().value : undefined;
 	}
 

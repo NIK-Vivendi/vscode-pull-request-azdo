@@ -114,8 +114,8 @@ export class ReviewManager {
 				} else {
 					sameUpstream = !!oldHead.upstream
 						? newHead.upstream &&
-						  oldHead.upstream.name === newHead.upstream.name &&
-						  oldHead.upstream.remote === newHead.upstream.remote
+							oldHead.upstream.name === newHead.upstream.name &&
+							oldHead.upstream.remote === newHead.upstream.remote
 						: !newHead.upstream;
 				}
 
@@ -179,12 +179,15 @@ export class ReviewManager {
 	}
 
 	private pollForStatusChange() {
-		setTimeout(async () => {
-			if (!this._validateStatusInProgress) {
-				await this.updateComments();
-			}
-			this.pollForStatusChange();
-		}, 1000 * 60 * 1);
+		setTimeout(
+			async () => {
+				if (!this._validateStatusInProgress) {
+					await this.updateComments();
+				}
+				this.pollForStatusChange();
+			},
+			1000 * 60 * 1,
+		);
 	}
 
 	private async checkBranchUpToDate(pr: IResolvedPullRequestModel): Promise<void> {

@@ -16,7 +16,10 @@ import {
 export class VSLSHost implements vscode.Disposable {
 	private _sharedService?: SharedService;
 	private _disposables: vscode.Disposable[];
-	constructor(private _liveShareAPI: LiveShare, private _api: API) {
+	constructor(
+		private _liveShareAPI: LiveShare,
+		private _api: API,
+	) {
 		this._disposables = [];
 	}
 

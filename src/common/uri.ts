@@ -176,7 +176,8 @@ export const handler = new UriEventHandler();
 export function createPRUris(pr: AzdoPullRequestModel, folderManager: FolderRepositoryManager, fileChange: IRawFileChange) {
 	let headUri: Uri, baseUri: Uri;
 	const headCommit = pr.head!.sha;
-	const fileName = fileChange.status === VersionControlChangeType.Delete ? fileChange.previous_filename! : fileChange.filename;
+	const fileName =
+		fileChange.status === VersionControlChangeType.Delete ? fileChange.previous_filename! : fileChange.filename;
 	const parentFileName = fileChange.previous_filename ?? '';
 	headUri = toPRUriAzdo(
 		Uri.file(pathUtils.resolve(folderManager.repository.rootUri.fsPath, removeLeadingSlash(fileName))),
@@ -185,7 +186,7 @@ export function createPRUris(pr: AzdoPullRequestModel, folderManager: FolderRepo
 		headCommit,
 		fileName,
 		false,
-		getGitChangeTypeFromVersionControlChangeType(fileChange.status)
+		getGitChangeTypeFromVersionControlChangeType(fileChange.status),
 	);
 	baseUri = toPRUriAzdo(
 		Uri.file(pathUtils.resolve(folderManager.repository.rootUri.fsPath, removeLeadingSlash(parentFileName))),
@@ -194,7 +195,7 @@ export function createPRUris(pr: AzdoPullRequestModel, folderManager: FolderRepo
 		headCommit,
 		parentFileName,
 		true,
-		getGitChangeTypeFromVersionControlChangeType(fileChange.status)
+		getGitChangeTypeFromVersionControlChangeType(fileChange.status),
 	);
 
 	return { headUri, baseUri };

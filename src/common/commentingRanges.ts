@@ -74,10 +74,10 @@ export function mapThreadsToBase(threads: GitPullRequestCommentThread[], isBase:
 				c.pullRequestThreadContext?.trackingCriteria !== undefined
 					? c.pullRequestThreadContext?.trackingCriteria?.origLeftFileStart !== undefined
 					: c.threadContext?.leftFileStart !== undefined,
-		  )
+			)
 		: threads.filter(c =>
 				c.pullRequestThreadContext?.trackingCriteria !== undefined
 					? c.pullRequestThreadContext?.trackingCriteria?.origRightFileStart !== undefined
 					: c.threadContext?.rightFileStart !== undefined,
-		  );
+			);
 }

@@ -6,19 +6,11 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--disable-extension=GitHub.vscode-pull-request-github"
-			],
-			"skipFiles": [
-				"<node_internals>/**/*.js",
-				"**/node_modules/**/*.js"
-			],
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}", "--disable-extension=GitHub.vscode-pull-request-github"],
+			"skipFiles": ["<node_internals>/**/*.js", "**/node_modules/**/*.js"],
 			"smartStep": true,
 			"sourceMaps": true,
-			"outFiles": [
-				"${workspaceFolder}/dist/*.js"
-			]
+			"outFiles": ["${workspaceFolder}/dist/*.js"]
 		},
 		{
 			"name": "Launch Extension in Webworker",
@@ -31,35 +23,22 @@
 				"--disable-extension=GitHub.vscode-pull-request-github",
 				"--disable-extension=GitHub.vscode-pull-request-github-insiders"
 			],
-			"skipFiles": [
-				"<node_internals>/**/*.js",
-				"**/node_modules/**/*.js"
-			],
+			"skipFiles": ["<node_internals>/**/*.js", "**/node_modules/**/*.js"],
 			"smartStep": true,
 			"sourceMaps": true,
-			"outFiles": [
-				"${workspaceFolder}/dist/browser/*.js"
-			]
+			"outFiles": ["${workspaceFolder}/dist/browser/*.js"]
 		},
 		{
 			"name": "Watch & Launch Extension",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--disable-extension=GitHub.vscode-pull-request-github",
-			],
-			"skipFiles": [
-				"<node_internals>/**/*.js",
-				"**/node_modules/**/*.js"
-			],
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}", "--disable-extension=GitHub.vscode-pull-request-github"],
+			"skipFiles": ["<node_internals>/**/*.js", "**/node_modules/**/*.js"],
 			"preLaunchTask": "npm: watch",
 			"smartStep": true,
 			"sourceMaps": true,
-			"outFiles": [
-				"${workspaceFolder}/dist/*.js"
-			]
+			"outFiles": ["${workspaceFolder}/dist/*.js"]
 		},
 		{
 			"name": "Watch & Launch Extension in Webworker",
@@ -67,20 +46,12 @@
 			"request": "launch",
 			"debugWebWorkerHost": true,
 			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--disable-extension=GitHub.vscode-pull-request-github",
-			],
-			"skipFiles": [
-				"<node_internals>/**/*.js",
-				"**/node_modules/**/*.js"
-			],
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}", "--disable-extension=GitHub.vscode-pull-request-github"],
+			"skipFiles": ["<node_internals>/**/*.js", "**/node_modules/**/*.js"],
 			"preLaunchTask": "npm: watch",
 			"smartStep": true,
 			"sourceMaps": true,
-			"outFiles": [
-				"${workspaceFolder}/dist/browser/*.js"
-			]
+			"outFiles": ["${workspaceFolder}/dist/browser/*.js"]
 		},
 		{
 			"name": "Extension Tests",
@@ -97,9 +68,7 @@
 			"preLaunchTask": "npm: compile:test",
 			"smartStep": true,
 			"sourceMaps": true,
-			"outFiles": [
-				"${workspaceFolder}/out/src/test/**/*.js"
-			]
+			"outFiles": ["${workspaceFolder}/out/src/test/**/*.js"]
 		},
 		{
 			"type": "pwa-node",
@@ -112,37 +81,30 @@
 				"--browserType=chromium",
 				"--attach=9229"
 			],
-			"cascadeTerminateToConfigurations": [
-				"Launch Web Test"
-			],
+			"cascadeTerminateToConfigurations": ["Launch Web Test"],
 			"presentation": {
-				"hidden": true,
+				"hidden": true
 			}
 		},
 		{
 			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Launch Web Test",
-			"skipFiles": [
-				"<node_internals>/**"
-			],
+			"skipFiles": ["<node_internals>/**"],
 			"port": 9229,
 			"resolveSourceMapLocations": [
 				"!**/vs/**", // exclude core vscode sources
-				"!**/static/build/extensions/**", // exclude built-in extensions
+				"!**/static/build/extensions/**" // exclude built-in extensions
 			],
 			"presentation": {
-				"hidden": true,
+				"hidden": true
 			}
 		}
 	],
 	"compounds": [
 		{
 			"name": "Debug Web Test",
-			"configurations": [
-				"Attach Web Test",
-				"Launch Web Test"
-			]
+			"configurations": ["Attach Web Test", "Launch Web Test"]
 		}
 	]
 }

@@ -57,8 +57,8 @@ export class PullRequestOverviewPanel extends WebviewBase {
 		const activeColumn = toTheSide
 			? vscode.ViewColumn.Beside
 			: vscode.window.activeTextEditor
-			? vscode.window.activeTextEditor.viewColumn
-			: vscode.ViewColumn.One;
+				? vscode.window.activeTextEditor.viewColumn
+				: vscode.ViewColumn.One;
 
 		// If we already have a panel, show it.
 		// Otherwise, create a new panel.

@@ -60,7 +60,11 @@ export class DetachedHeadError extends Error {
 }
 
 export class BadUpstreamError extends Error {
-	constructor(public branchName: string, public upstreamRef: UpstreamRef, public problem: string) {
+	constructor(
+		public branchName: string,
+		public upstreamRef: UpstreamRef,
+		public problem: string,
+	) {
 		super();
 	}
 
@@ -945,7 +949,7 @@ export class FolderRepositoryManager implements vscode.Disposable {
 		return !rest.length // Is there only one GitHub remote?
 			? first // I GUESS THAT'S WHAT WE'RE GOING WITH, THEN.
 			: // Otherwise, let's try...
-			  this.findRepo(byRemoteName('origin')) || // by convention
+				this.findRepo(byRemoteName('origin')) || // by convention
 					first; // out of raw desperation
 	}
 
@@ -1148,9 +1152,9 @@ export class FolderRepositoryManager implements vscode.Disposable {
 				const activePRUrl = this.activePullRequest && this.activePullRequest.base.repositoryCloneUrl;
 				const matchesActiveBranch = activePRUrl
 					? activePRUrl.owner === value.metadata.owner &&
-					  activePRUrl.repositoryName === value.metadata.repositoryName &&
-					  this.activePullRequest &&
-					  this.activePullRequest.getPullRequestId() === value.metadata.prNumber
+						activePRUrl.repositoryName === value.metadata.repositoryName &&
+						this.activePullRequest &&
+						this.activePullRequest.getPullRequestId() === value.metadata.prNumber
 					: false;
 
 				if (!matchesActiveBranch) {
@@ -1522,7 +1526,10 @@ export function getEventType(text: string) {
 	}
 }
 
-const byRemoteName = (name: string): Predicate<AzdoRepository> => ({ remote: { remoteName } }) => remoteName === name;
+const byRemoteName =
+	(name: string): Predicate<AzdoRepository> =>
+	({ remote: { remoteName } }) =>
+		remoteName === name;
 
 export const titleAndBodyFrom = (message: string): { title: string; body: string } => {
 	const idxLineBreak = message.indexOf('\n');

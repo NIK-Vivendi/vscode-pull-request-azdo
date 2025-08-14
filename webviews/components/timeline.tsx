@@ -115,8 +115,8 @@ const association = ({ authorAssociation }: ReviewEvent, format = (assoc: string
 	authorAssociation.toLowerCase() === 'user'
 		? format('you')
 		: authorAssociation && authorAssociation !== 'NONE'
-		? format(authorAssociation)
-		: null;
+			? format(authorAssociation)
+			: null;
 
 const positionKey = (comment: GitPullRequestCommentThread) =>
 	// comment.position !== null

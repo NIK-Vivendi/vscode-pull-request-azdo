@@ -30,7 +30,8 @@ import { GitFileChangeNode, gitFileChangeNodeFilter, RemoteFileChangeNode } from
 import { ThreadData } from './treeNodes/pullRequestNode';
 
 export class ReviewCommentController
-	implements vscode.Disposable, CommentHandler, vscode.CommentingRangeProvider, CommentReactionHandler {
+	implements vscode.Disposable, CommentHandler, vscode.CommentingRangeProvider, CommentReactionHandler
+{
 	private _localToDispose: vscode.Disposable[] = [];
 	private _onDidChangeComments = new vscode.EventEmitter<GitPullRequestCommentThread[]>();
 	public onDidChangeComments = this._onDidChangeComments.event;
@@ -291,8 +292,8 @@ export class ReviewCommentController
 					const threadMap = thread.isOutdated
 						? this._obsoleteFileChangeCommentThreads
 						: thread.diffSide === DiffSide.RIGHT
-						? this._workspaceFileChangeCommentThreads
-						: this._reviewSchemeFileChangeCommentThreads;
+							? this._workspaceFileChangeCommentThreads
+							: this._reviewSchemeFileChangeCommentThreads;
 
 					if (threadMap[removeLeadingSlash(path)]) {
 						threadMap[removeLeadingSlash(path)].push(newThread);
@@ -305,8 +306,8 @@ export class ReviewCommentController
 					const threadMap = thread.isOutdated
 						? this._obsoleteFileChangeCommentThreads
 						: thread.diffSide === DiffSide.RIGHT
-						? this._workspaceFileChangeCommentThreads
-						: this._reviewSchemeFileChangeCommentThreads;
+							? this._workspaceFileChangeCommentThreads
+							: this._reviewSchemeFileChangeCommentThreads;
 
 					const index = threadMap[removeLeadingSlash(thread.path)]?.findIndex(t => t.threadId === thread.id);
 					if (index > -1) {
@@ -321,8 +322,8 @@ export class ReviewCommentController
 					const threadMap = thread.isOutdated
 						? this._obsoleteFileChangeCommentThreads
 						: thread.diffSide === DiffSide.RIGHT
-						? this._workspaceFileChangeCommentThreads
-						: this._reviewSchemeFileChangeCommentThreads;
+							? this._workspaceFileChangeCommentThreads
+							: this._reviewSchemeFileChangeCommentThreads;
 
 					const index = threadMap[removeLeadingSlash(thread.path)]?.findIndex(t => t.threadId === thread.id);
 					if (index > -1) {
