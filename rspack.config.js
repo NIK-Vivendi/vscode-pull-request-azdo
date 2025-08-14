@@ -13,7 +13,6 @@
 const execFile = require('child_process').execFile;
 const path = require('path');
 const { EsbuildPlugin } = require('esbuild-loader');
-const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const { rspack } = require('@rspack/core');
 
@@ -62,20 +61,7 @@ async function getWebviewConfig(mode, env, entry) {
 	/**
 	 * @type WebpackConfig['plugins'] | any
 	 */
-	const plugins = [
-		new ForkTsCheckerPlugin({
-			async: false,
-			eslint: {
-				enabled: true,
-				files: path.join(basePath, '**', '*.ts'),
-				options: { cache: true, configFile: path.join(__dirname, '.eslintrc.webviews.json') },
-			},
-			formatter: 'basic',
-			typescript: {
-				configFile: path.join(__dirname, 'tsconfig.webviews.json'),
-			},
-		}),
-	];
+	const plugins = [];
 
 	return {
 		name: 'webviews',
@@ -126,13 +112,17 @@ async function getWebviewConfig(mode, env, entry) {
 								},
 							}
 						: {
-								loader: 'ts-loader',
+								loader: 'builtin:swc-loader',
 								options: {
-									configFile: path.join(__dirname, 'tsconfig.webviews.json'),
-									experimentalWatchApi: true,
-									transpileOnly: true,
+									jsc: {
+										parser: {
+											syntax: 'typescript',
+											tsx: true,
+										},
+									},
 								},
 							},
+					type: 'javascript/auto',
 				},
 				{
 					test: /\.css/,
@@ -166,23 +156,7 @@ async function getExtensionConfig(target, mode, env) {
 	/**
 	 * @type WebpackConfig['plugins'] | any
 	 */
-	const plugins = [
-		new ForkTsCheckerPlugin({
-			async: false,
-			eslint: {
-				enabled: true,
-				files: path.join(basePath, '**', '*.ts'),
-				options: {
-					cache: true,
-					configFile: path.join(__dirname, target === 'webworker' ? '.eslintrc.browser.json' : '.eslintrc.node.json'),
-				},
-			},
-			formatter: 'basic',
-			typescript: {
-				configFile: path.join(__dirname, target === 'webworker' ? 'tsconfig.browser.json' : 'tsconfig.json'),
-			},
-		}),
-	];
+	const plugins = [];
 
 	if (target === 'webworker') {
 		plugins.push(
@@ -257,38 +231,23 @@ async function getExtensionConfig(target, mode, env) {
 								},
 							}
 						: {
-								loader: 'ts-loader',
+								loader: 'builtin:swc-loader',
 								options: {
-									configFile: path.join(
-										__dirname,
-										target === 'webworker' ? 'tsconfig.browser.json' : 'tsconfig.json',
-									),
-									experimentalWatchApi: true,
-									transpileOnly: true,
+									jsc: {
+										parser: {
+											syntax: 'typescript',
+											tsx: true,
+										},
+									},
 								},
 							},
+					type: 'javascript/auto',
 				},
-				// // FIXME: apollo-client uses .mjs, which imposes hard restrictions
-				// // on imports available from other callers. They probably didn't know
-				// // this. They just used .mjs because it seemed new and hip.
-				// //
-				// // We should either fix or remove that package, then remove this rule,
-				// // which introduces nonstandard behavior for mjs files, which are
-				// // terrible. This is all terrible. Everything is terrible.👇🏾
-				// {
-				// 	test: /\.mjs$/,
-				// 	include: /node_modules/,
-				// 	type: "javascript/auto",
-				// },
 				{
 					exclude: /node_modules/,
 					test: /\.(graphql|gql)$/,
 					loader: 'graphql-tag/loader',
 				},
-				// {
-				// 	test: /webview-*\.js/,
-				// 	use: 'raw-loader'
-				// },
 			],
 		},
 		resolve: {
@@ -323,33 +282,22 @@ async function getExtensionConfig(target, mode, env) {
 							),
 						}
 					: undefined,
-			// : {
-			// 	'universal-user-agent': path.join(__dirname, 'node_modules', 'universal-user-agent', 'dist-node', 'index.js'),
-			// },
 			fallback:
 				target === 'webworker'
 					? {
 							path: require.resolve('path-browserify'),
 							url: require.resolve('url'),
 							stream: require.resolve('stream-browserify'),
-							// zlib: require.resolve("browserify-zlib"),
-							// crypto: require.resolve("crypto-browserify"),
 							http: require.resolve('stream-http'),
 							https: require.resolve('https-browserify'),
-							// util: require.resolve("util/"),
 							buffer: require.resolve('buffer/'),
-							// assert: require.resolve("assert/"),
-							// stream:false,
-							zlib: false,
-							crypto: false,
-							// http: false,
-							//https:false,
-							util: false,
-							// buffer:false,
 							assert: require.resolve('assert'),
 							os: require.resolve('os-browserify/browser'),
 							constants: require.resolve('constants-browserify'),
 							fs: path.resolve(__dirname, 'src', 'env', 'browser', 'fs'),
+							zlib: false,
+							crypto: false,
+							util: false,
 							net: false,
 							tls: false,
 						}
@@ -359,9 +307,6 @@ async function getExtensionConfig(target, mode, env) {
 		},
 		externals: {
 			vscode: 'commonjs vscode',
-			// 'utf-8-validate': 'utf-8-validate',
-			// 'bufferutil': 'bufferutil',
-			// 'encoding': 'encoding',
 			'applicationinsights-native-metrics': 'applicationinsights-native-metrics',
 			'@opentelemetry/tracing': '@opentelemetry/tracing',
 		},

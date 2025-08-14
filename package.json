@@ -835,7 +835,6 @@
 		"eslint-cli": "1.1.1",
 		"eslint-config-prettier": "8.1.0",
 		"eslint-plugin-import": "2.22.1",
-		"fork-ts-checker-webpack-plugin": "6.1.1",
 		"glob": "7.1.6",
 		"https-browserify": "^1.0.0",
 		"jsdom": "26.0.0",
